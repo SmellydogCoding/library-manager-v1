@@ -16,6 +16,12 @@ router.get('/allbooks', function(req, res, next) {
   });
 });
 
+router.get('/allpatrons', function(req, res, next) {
+  models.Patron.findAll().then(function(patrons) {
+    res.render('allpatrons', {patrons: patrons});
+  });
+});
+
 module.exports = router;
 
 // use the build method
