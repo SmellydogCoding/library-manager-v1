@@ -10,6 +10,12 @@ router.get('/', function(req, res, next) {
   res.render('index');
 });
 
+router.get('/allbooks', function(req, res, next) {
+  models.Book.findAll().then(function(books) {
+    res.render('allbooks', {books: books});
+  });
+});
+
 module.exports = router;
 
 // use the build method
