@@ -28,6 +28,8 @@ var server = http.createServer(app);
 models.sequelize.sync().then(function() {
   server.listen(port, function() {
     debug('Express server listening on port ' + server.address().port);
+    console.log('Database connection successful');
+    console.log('frontend server is running on pont ' + port);
   });
 },function(error) {
   console.log(error);
