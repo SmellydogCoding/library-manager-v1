@@ -37,6 +37,41 @@ router.get('/allloans', function(req, res, next) {
   });
 });
 
+router.get('/overdue', function(req, res, next) {
+  models.Loan.findAll({
+    where: {
+      $and: {
+        return_by: {
+          $lt: new Date()
+        },
+          returned_on: null
+      }
+    },
+    include: [
+      {
+        model: models.Book
+      }
+    ]
+  }).then(function(loans) {
+    res.render('overduebooks', {loans: loans});
+  });
+});
+
+router.get('/checkedout', function(req, res, next) {
+  models.Loan.findAll({
+    where: {
+      returned_on: null
+    },
+    include: [
+      {
+        model: models.Book
+      }
+    ]
+  }).then(function(loans) {
+    res.render('checkedout', {loans: loans});
+  });
+});
+
 module.exports = router;
 
 // use the build method

@@ -4,7 +4,7 @@ body
   h1 Books
   p 
     a(href="new_book.html" class="button" class="button") Create New Book
-  p Filters: All | #[a(href="/overdue") Overdue] | #[a(href="/checkedout") Checked Out]
+  p Filters: #[a(href="/allbooks") All] | #[a(href="/overdue") Overdue] | Checked Out
   table
     thead
       tr
@@ -13,10 +13,10 @@ body
         th Genre
         th Year Released
     tbody
-      each book in books
+      each loan in loans
         tr
           td
-            a(href="/bookdetail/" + book.id) #{book.title}
-          td #{book.author}
-          td #{book.genre}
-          td #{book.first_published}
+            a(href="/bookdetail/" + loan.Book.id) #{loan.Book.title}
+          td #{loan.Book.author}
+          td #{loan.Book.genre}
+          td #{loan.Book.first_published}
