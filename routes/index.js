@@ -38,7 +38,7 @@ router.get('/allloans', function(req, res, next) {
   });
 });
 
-router.get('/overdue', function(req, res, next) {
+router.get('/overdue/books', function(req, res, next) {
   models.Loan.findAll({
     where: {
       $and: {
@@ -58,7 +58,7 @@ router.get('/overdue', function(req, res, next) {
   });
 });
 
-router.get('/checkedout', function(req, res, next) {
+router.get('/checkedout/books', function(req, res, next) {
   models.Loan.findAll({
     where: {
       returned_on: null
@@ -69,7 +69,7 @@ router.get('/checkedout', function(req, res, next) {
       }
     ]
   }).then(function(loans) {
-    res.render('checkedout', {loans: loans});
+    res.render('checkedoutbooks', {loans: loans});
   });
 });
 
@@ -98,6 +98,47 @@ router.get('/bookdetail/:bookid', function(req, res, next) {
     ]
   }).then(function(book) {
     res.render('bookdetail', {book: book});
+  });
+});
+
+router.get('/overdue/loans', function(req, res, next) {
+  models.Loan.findAll({
+    where: {
+      $and: {
+        return_by: {
+          $lt: new Date()
+        },
+          returned_on: null
+      }
+    },
+    include: [
+      {
+        model: models.Book
+      },
+      {
+        model: models.Patron
+      }
+    ]
+  }).then(function(loans) {
+    res.render('overdueloans', {loans: loans});
+  });
+});
+
+router.get('/checkedout/loans', function(req, res, next) {
+  models.Loan.findAll({
+    where: {
+      returned_on: null
+    },
+    include: [
+      {
+        model: models.Book
+      },
+      {
+        model: models.Patron
+      }
+    ]
+  }).then(function(loans) {
+    res.render('checkedoutloans', {loans: loans});
   });
 });
 
