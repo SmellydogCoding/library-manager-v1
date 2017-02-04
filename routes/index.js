@@ -4,6 +4,7 @@ var models = require('../models');
 
 models.Loan.belongsTo(models.Book);
 models.Loan.belongsTo(models.Patron);
+models.Book.hasMany(models.Loan);
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -80,7 +81,24 @@ router.post('/newbook', function(req, res, next) {
   models.Book.create(req.body).then(function() {
     res.redirect('/allbooks');
   });
-  // console.dir(req.body);
+});
+
+router.get('/bookdetail/:bookid', function(req, res, next) {
+  models.Book.find({
+    where: {
+      id: req.params.bookid
+    },
+    include: [
+      {
+        model: models.Loan,
+        include: [{
+          model: models.Patron
+        }]
+      }
+    ]
+  }).then(function(book) {
+    res.render('bookdetail', {book: book});
+  });
 });
 
 module.exports = router;

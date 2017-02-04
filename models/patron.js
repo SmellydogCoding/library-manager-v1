@@ -10,7 +10,8 @@ module.exports = function(sequelize, DataTypes) {
     zip_code: DataTypes.INTEGER
   },
   {
-    timestamps: false
+    timestamps: false,
+    underscored: true
   },
   {
     classMethods: {

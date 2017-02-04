@@ -1,0 +1,37 @@
+include ./partials/_head.pug
+include ./partials/_nav.pug
+body
+  h1 #{book.title}
+  form(action="/updatebook" method="post")
+    p
+      label(for="title") Title #[input#title(type="text" value=book.title name="title" required)]
+    p
+      label(for="author") Author #[input#author(type="text" value=book.author name="author" required)]
+    p
+      label(for="genre") Genre #[input#genre(type="text" value=book.genre name="genre" required)]
+    p
+      label(for="first_published") First Published #[input#first_published(type="text" value=book.first_published name="first_published")]
+    p
+      input(type="submit" value="Update")
+  h2 Loan History
+  table
+    thead
+      tr
+        th Book
+        th Patron 
+        th Loaned on
+        th Return by 
+        th Returned on
+        th Action 
+    tbody
+      each loan in book.Loans
+        tr
+          td
+            a(href="/bookdetail/" + loan.book_id) #{book.title}
+          td
+            a(href="/patrondetail/" + loan.patron_id) #{loan.Patron.first_name} #{loan.Patron.last_name}
+          td #{loan.loaned_on}
+          td #{loan.return_by}
+          td #{loan.returned_on}
+          td.button 
+            a(href="/returnbook/" + loan.id) Return Book

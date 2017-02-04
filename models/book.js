@@ -15,7 +15,8 @@ module.exports = function(sequelize, DataTypes) {
     first_published: DataTypes.INTEGER
     },
     {
-      timestamps: false
+      timestamps: false,
+      underscored: true
     },
     {
     classMethods: {
