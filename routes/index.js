@@ -72,6 +72,17 @@ router.get('/checkedout', function(req, res, next) {
   });
 });
 
+router.get('/newbook', function(req, res, next) {
+  res.render('newbook');
+});
+
+router.post('/newbook', function(req, res, next) {
+  models.Book.create(req.body).then(function() {
+    res.redirect('/allbooks');
+  });
+  // console.dir(req.body);
+});
+
 module.exports = router;
 
 // use the build method
