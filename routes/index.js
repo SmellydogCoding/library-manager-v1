@@ -2,11 +2,11 @@ var express = require('express');
 var router = express.Router();
 var models = require('../models');
 
+models.Loan.belongsTo(models.Book);
+models.Loan.belongsTo(models.Patron);
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  // models.Book.findAll().then(function(books) {
-  //   res.render('index', {books: books, title: "Library Manager"});
-  // });
   res.render('index');
 });
 
@@ -19,6 +19,21 @@ router.get('/allbooks', function(req, res, next) {
 router.get('/allpatrons', function(req, res, next) {
   models.Patron.findAll().then(function(patrons) {
     res.render('allpatrons', {patrons: patrons});
+  });
+});
+
+router.get('/allloans', function(req, res, next) {
+  models.Loan.findAll({
+    include: [
+      {
+        model: models.Book
+      },
+      {
+        model: models.Patron
+      }
+    ]
+  }).then(function(loans) {
+    res.render('allloans', {loans: loans});
   });
 });
 

@@ -1,0 +1,28 @@
+include ./partials/_head.pug
+include ./partials/_nav.pug
+body
+  h1 Loans
+  p.button 
+    a(href="new_loan.html") Create New Loan
+  p Filters #[a(href="all_loans.html") All] | #[a(href="overdue_loans.html") Overdue] | #[a(href="checked_loans.html")] Checked Out
+  table
+    thead
+      tr
+        th Book
+        th Patron 
+        th Loaned on
+        th Return by 
+        th Returned on
+        th Action
+    tbody
+      each loan in loans
+        tr
+          td 
+            a(href="book_detail.html") #{loan.Book.title}
+          td
+            a(href="patron_detail.html") #{loan.Patron.first_name} #{loan.Patron.last_name}
+          td #{loan.loaned_on}
+          td #{loan.return_by}
+          td #{loan.returned_on}
+          td.button 
+            a(href="return_book.html") Return Book
