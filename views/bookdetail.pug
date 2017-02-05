@@ -2,7 +2,8 @@ include ./partials/_head.pug
 include ./partials/_nav.pug
 body
   h1 #{book.title}
-  form(action="/updatebook" method="post")
+  form.update(action="/books/update" method="POST")
+    input(type="hidden" name="bookid" value=book.id)
     p
       label(for="title") Title #[input#title(type="text" value=book.title name="title" required)]
     p
@@ -27,11 +28,13 @@ body
       each loan in book.Loans
         tr
           td
-            a(href="/bookdetail/" + loan.book_id) #{book.title}
+            a(href="/books/update/" + loan.book_id) #{book.title}
           td
-            a(href="/patrondetail/" + loan.patron_id) #{loan.Patron.first_name} #{loan.Patron.last_name}
+            a(href="/patrons/update/" + loan.patron_id) #{loan.Patron.first_name} #{loan.Patron.last_name}
           td #{loan.loaned_on}
           td #{loan.return_by}
           td #{loan.returned_on}
           td.button 
-            a(href="/returnbook/" + loan.id) Return Book
+            a(href="/loans/return/" + loan.id) Return Book
+  script(src="../../js/jquery-3.1.1.min.js")
+  script(src="../../js/putOrDelete.js")

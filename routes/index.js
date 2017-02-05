@@ -6,16 +6,90 @@ models.Loan.belongsTo(models.Book);
 models.Loan.belongsTo(models.Patron);
 models.Book.hasMany(models.Loan);
 
-/* GET home page. */
+// Home Route
 router.get('/', function(req, res, next) {
   res.render('index');
 });
 
-router.get('/allbooks', function(req, res, next) {
-  models.Book.findAll().then(function(books) {
-    res.render('allbooks', {books: books});
+// Books Routes
+
+router.get('/books', function(req, res, next) {
+  if (req.query.filter === "overdue") {
+    models.Loan.findAll({
+      where: {
+        $and: {
+          return_by: {
+            $lt: new Date()
+          },
+            returned_on: null
+        }
+      },
+      include: [
+        {
+          model: models.Book
+        }
+      ]
+    }).then(function(loans) {
+      res.render('books', {loans: loans, filter: "overdue"});
+    });
+  } else if (req.query.filter == "checked_out") {
+    models.Loan.findAll({
+      where: {
+        returned_on: null
+      },
+      include: [
+        {
+          model: models.Book
+        }
+      ]
+    }).then(function(loans) {
+      res.render('books', {loans: loans, filter: "checked"});
+    });
+  } else {
+    models.Book.findAll().then(function(books) {
+      res.render('books', {books: books, filter: "all"});
+    });
+  }
+});
+
+router.get('/books/new', function(req, res, next) {
+  res.render('newbook');
+});
+
+router.post('/books/new', function(req, res, next) {
+  models.Book.create(req.body).then(function() {
+    res.redirect('/books');
   });
 });
+
+router.get('/books/update/:bookid', function(req, res, next) {
+  models.Book.find({
+    where: {
+      id: req.params.bookid
+    },
+    include: [
+      {
+        model: models.Loan,
+        include: [{
+          model: models.Patron
+        }]
+      }
+    ]
+  }).then(function(book) {
+    res.render('bookdetail', {book: book});
+  });
+});
+
+router.put('/books/update', function(req, res, next) {
+  // console.log(req.body);
+  models.Book.findById(req.body.bookid).then(function(book) {
+    book.update(req.body).then(function() {
+      res.end();
+    });
+  });
+});
+
+// Patrons Routes
 
 router.get('/allpatrons', function(req, res, next) {
   models.Patron.findAll().then(function(patrons) {
@@ -38,68 +112,7 @@ router.get('/allloans', function(req, res, next) {
   });
 });
 
-router.get('/overdue/books', function(req, res, next) {
-  models.Loan.findAll({
-    where: {
-      $and: {
-        return_by: {
-          $lt: new Date()
-        },
-          returned_on: null
-      }
-    },
-    include: [
-      {
-        model: models.Book
-      }
-    ]
-  }).then(function(loans) {
-    res.render('overduebooks', {loans: loans});
-  });
-});
 
-router.get('/checkedout/books', function(req, res, next) {
-  models.Loan.findAll({
-    where: {
-      returned_on: null
-    },
-    include: [
-      {
-        model: models.Book
-      }
-    ]
-  }).then(function(loans) {
-    res.render('checkedoutbooks', {loans: loans});
-  });
-});
-
-router.get('/newbook', function(req, res, next) {
-  res.render('newbook');
-});
-
-router.post('/newbook', function(req, res, next) {
-  models.Book.create(req.body).then(function() {
-    res.redirect('/allbooks');
-  });
-});
-
-router.get('/bookdetail/:bookid', function(req, res, next) {
-  models.Book.find({
-    where: {
-      id: req.params.bookid
-    },
-    include: [
-      {
-        model: models.Loan,
-        include: [{
-          model: models.Patron
-        }]
-      }
-    ]
-  }).then(function(book) {
-    res.render('bookdetail', {book: book});
-  });
-});
 
 router.get('/overdue/loans', function(req, res, next) {
   models.Loan.findAll({

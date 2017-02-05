@@ -1,0 +1,36 @@
+include ./partials/_head.pug
+include ./partials/_nav.pug
+body
+  h1 Books
+  p 
+    a(href="/books/new" class="button" class="button") Create New Book
+  if filter == "all"
+    p Filters: All | #[a(href="/books?filter=overdue") Overdue] | #[a(href="/books?filter=checked_out") Checked Out]
+  if filter == "overdue"
+    p Filters: #[a(href="/books") All] | Overdue | #[a(href="/books?filter=checked_out") Checked Out]
+  if filter == "checked"
+    p Filters: #[a(href="/books") All] | #[a(href="/books?filter=overdue") Overdue] | Checked Out
+  table
+    thead
+      tr
+        th Title
+        th Author
+        th Genre
+        th Year Released
+    tbody
+      if books
+        each book in books
+          tr
+            td
+              a(href="/books/update/" + book.id) #{book.title}
+            td #{book.author}
+            td #{book.genre}
+            td #{book.first_published}
+      if loans
+        each loan in loans
+          tr
+            td
+              a(href="/books/update/" + loan.Book.id) #{loan.Book.title}
+            td #{loan.Book.author}
+            td #{loan.Book.genre}
+            td #{loan.Book.first_published}
