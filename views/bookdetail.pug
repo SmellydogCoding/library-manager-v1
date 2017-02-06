@@ -2,7 +2,7 @@ include ./partials/_head.pug
 include ./partials/_nav.pug
 body
   h1 #{book.title}
-  form.update(action="/books/update" method="POST")
+  form.update(action="/books/update" + "?_method=PUT" method="post")
     input(type="hidden" name="bookid" value=book.id)
     p
       label(for="title") Title #[input#title(type="text" value=book.title name="title" required)]

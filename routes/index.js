@@ -84,7 +84,7 @@ router.put('/books/update', function(req, res, next) {
   // console.log(req.body);
   models.Book.findById(req.body.bookid).then(function(book) {
     book.update(req.body).then(function() {
-      res.end();
+      res.redirect(303,'/books');
     });
   });
 });
