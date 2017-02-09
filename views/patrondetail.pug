@@ -2,7 +2,7 @@ include ./partials/_head.pug
 include ./partials/_nav.pug
 body
   h1 #{patron.first_name} #{patron.last_name}
-  form.update(action="/patrons/update" + "?_method=PUT" method="post")
+  form.update(action="/patrons/update" + "?_method=PUT", method="post")
     input(type="hidden" name="patronid" value=patron.id)
     p
       label(for="first-name") First Name #[input#first-name(type="text" value=patron.first_name name="first-name" required)]

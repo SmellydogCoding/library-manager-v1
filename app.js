@@ -4,9 +4,11 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var methodOverride = require('method-override');
 
 // Express App
 var app = express();
+app.use(methodOverride('_method'));
 
 // Body Parser (must be called before routes)
 app.use(bodyParser.json());
