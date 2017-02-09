@@ -97,63 +97,104 @@ router.get('/allpatrons', function(req, res, next) {
   });
 });
 
-router.get('/allloans', function(req, res, next) {
-  models.Loan.findAll({
-    include: [
-      {
-        model: models.Book
+// Loans Routes
+
+router.get('/loans', function(req, res, next) {
+  if (req.query.filter === "overdue") {
+    models.Loan.findAll({
+      where: {
+        $and: {
+          return_by: {
+            $lt: new Date()
+          },
+            returned_on: null
+        }
       },
-      {
-        model: models.Patron
-      }
-    ]
-  }).then(function(loans) {
-    res.render('allloans', {loans: loans});
-  });
-});
-
-
-
-router.get('/overdue/loans', function(req, res, next) {
-  models.Loan.findAll({
-    where: {
-      $and: {
-        return_by: {
-          $lt: new Date()
+      include: [
+        {
+          model: models.Book
         },
-          returned_on: null
-      }
-    },
-    include: [
-      {
-        model: models.Book
+        {
+          model: models.Patron
+        }
+      ]
+    }).then(function(loans) {
+      res.render('loans', {loans: loans, filter: "overdue"});
+    });
+  } else if (req.query.filter == "checked_out") {
+    models.Loan.findAll({
+      where: {
+        returned_on: null
       },
-      {
-        model: models.Patron
-      }
-    ]
-  }).then(function(loans) {
-    res.render('overdueloans', {loans: loans});
-  });
+      include: [
+        {
+          model: models.Book
+        },
+        {
+          model: models.Patron
+        }
+      ]
+    }).then(function(loans) {
+      res.render('loans', {loans: loans, filter: "checked"});
+    });
+  } else {
+      models.Loan.findAll({
+      include: [
+        {
+          model: models.Book
+        },
+        {
+          model: models.Patron
+        }
+      ]
+    }).then(function(loans) {
+      res.render('loans', {loans: loans, filter: "all"});
+    });
+  }
 });
 
-router.get('/checkedout/loans', function(req, res, next) {
-  models.Loan.findAll({
-    where: {
-      returned_on: null
-    },
-    include: [
-      {
-        model: models.Book
-      },
-      {
-        model: models.Patron
-      }
-    ]
-  }).then(function(loans) {
-    res.render('checkedoutloans', {loans: loans});
-  });
-});
+
+
+// router.get('/overdue/loans', function(req, res, next) {
+//   models.Loan.findAll({
+//     where: {
+//       $and: {
+//         return_by: {
+//           $lt: new Date()
+//         },
+//           returned_on: null
+//       }
+//     },
+//     include: [
+//       {
+//         model: models.Book
+//       },
+//       {
+//         model: models.Patron
+//       }
+//     ]
+//   }).then(function(loans) {
+//     res.render('overdueloans', {loans: loans});
+//   });
+// });
+
+// router.get('/checkedout/loans', function(req, res, next) {
+//   models.Loan.findAll({
+//     where: {
+//       returned_on: null
+//     },
+//     include: [
+//       {
+//         model: models.Book
+//       },
+//       {
+//         model: models.Patron
+//       }
+//     ]
+//   }).then(function(loans) {
+//     res.render('checkedoutloans', {loans: loans});
+//   });
+// });
 
 module.exports = router;
 
