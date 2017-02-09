@@ -5,6 +5,7 @@ var models = require('../models');
 models.Loan.belongsTo(models.Book);
 models.Loan.belongsTo(models.Patron);
 models.Book.hasMany(models.Loan);
+models.Patron.hasMany(models.Loan);
 
 // Home Route
 router.get('/', function(req, res, next) {
@@ -81,7 +82,6 @@ router.get('/books/update/:bookid', function(req, res, next) {
 });
 
 router.put('/books/update', function(req, res, next) {
-  // console.log(req.body);
   models.Book.findById(req.body.bookid).then(function(book) {
     book.update(req.body).then(function() {
       res.redirect(303,'/books');
@@ -91,9 +91,35 @@ router.put('/books/update', function(req, res, next) {
 
 // Patrons Routes
 
-router.get('/allpatrons', function(req, res, next) {
+router.get('/patrons', function(req, res, next) {
   models.Patron.findAll().then(function(patrons) {
-    res.render('allpatrons', {patrons: patrons});
+    res.render('patrons', {patrons: patrons});
+  });
+});
+
+router.get('/patrons/update/:patronid', function(req, res, next) {
+  models.Patron.find({
+    where: {
+      id: req.params.patronid
+    },
+    include: [
+      {
+        model: models.Loan,
+        include: [{
+          model: models.Book
+        }]
+      }
+    ]
+  }).then(function(patron) {
+    res.render('patrondetail', {patron: patron});
+  });
+});
+
+router.put('/patrons/update', function(req, res, next) {
+  models.Patron.findById(req.body.patronid).then(function(patron) {
+    patron.update(req.body).then(function() {
+      res.redirect(303,'/patrons');
+    });
   });
 });
 
@@ -152,49 +178,6 @@ router.get('/loans', function(req, res, next) {
     });
   }
 });
-
-
-
-// router.get('/overdue/loans', function(req, res, next) {
-//   models.Loan.findAll({
-//     where: {
-//       $and: {
-//         return_by: {
-//           $lt: new Date()
-//         },
-//           returned_on: null
-//       }
-//     },
-//     include: [
-//       {
-//         model: models.Book
-//       },
-//       {
-//         model: models.Patron
-//       }
-//     ]
-//   }).then(function(loans) {
-//     res.render('overdueloans', {loans: loans});
-//   });
-// });
-
-// router.get('/checkedout/loans', function(req, res, next) {
-//   models.Loan.findAll({
-//     where: {
-//       returned_on: null
-//     },
-//     include: [
-//       {
-//         model: models.Book
-//       },
-//       {
-//         model: models.Patron
-//       }
-//     ]
-//   }).then(function(loans) {
-//     res.render('checkedoutloans', {loans: loans});
-//   });
-// });
 
 module.exports = router;
 

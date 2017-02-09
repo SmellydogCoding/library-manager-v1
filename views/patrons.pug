@@ -16,7 +16,7 @@ body
       each patron in patrons
         tr
           td 
-            a(href="/patrondetail/" + patron.id) #{patron.first_name} #{patron.last_name}
+            a(href="/patrons/update/" + patron.id) #{patron.first_name} #{patron.last_name}
           td #{patron.address}
           td #{patron.email}
           td #{patron.library_id}
