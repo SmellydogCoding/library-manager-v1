@@ -1,0 +1,19 @@
+include ./partials/_head.pug
+include ./partials/_nav.pug
+body
+  h1 New Patron
+  form(action="/patrons/new" method="post")
+    p
+      label(for="first-name") First Name #[input#first-name(type="text" name="first_name" required)]
+    p
+      label(for="last-name") Last Name #[input#last-name(type="text" name="last_name" required)]
+    p
+      label(for="address") Address #[input#address(type="text" name="address" required)]
+    p
+      label(for="email") Email #[input#email(type="text" name="email" required)]
+    p
+      label(for="library-id") Library Id #[input#zip-code(type="text" name="library_id" required)]
+    p
+      label(for="zip-code") Zip Code #[input#zip-code(type="text" name="zip_code" required)]
+    p
+      input(type="submit" value="Create New Patron")

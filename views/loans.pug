@@ -3,7 +3,7 @@ include ./partials/_nav.pug
 body
   h1 Loans
   p 
-    a(href="/loans/new" class="button" class="button") Create New Book
+    a(href="/loans/new" class="button" class="button") Create New Loan
   if filter == "all"
     p Filters: All | #[a(href="/loans?filter=overdue") Overdue] | #[a(href="/loans?filter=checked_out") Checked Out]
   if filter == "overdue"

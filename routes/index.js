@@ -97,6 +97,16 @@ router.get('/patrons', function(req, res, next) {
   });
 });
 
+router.get('/patrons/new', function(req, res, next) {
+  res.render('newpatron');
+});
+
+router.post('/patrons/new', function(req, res, next) {
+  models.Patron.create(req.body).then(function() {
+    res.redirect('/patrons');
+  });
+});
+
 router.get('/patrons/update/:patronid', function(req, res, next) {
   models.Patron.find({
     where: {
@@ -177,6 +187,23 @@ router.get('/loans', function(req, res, next) {
       res.render('loans', {loans: loans, filter: "all"});
     });
   }
+});
+
+router.get('/loans/new', function(req, res, next) {
+  let books = models.Book.findAll({attributes: ['id','title']});
+  let patrons = models.Patron.findAll({attributes: ['id','first_name','last_name']});
+  
+  Promise.all([books,patrons]).then(function(querys) {
+    // console.log(querys[0],querys[1]);
+    res.render('newloan', {books: querys[0], patrons: querys[1]});
+  });
+  
+});
+
+router.post('/loans/new', function(req, res, next) {
+  models.Loan.create(req.body).then(function() {
+    res.redirect('/loans');
+  });
 });
 
 module.exports = router;
