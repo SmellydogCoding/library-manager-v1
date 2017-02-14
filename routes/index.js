@@ -192,18 +192,69 @@ router.get('/loans', function(req, res, next) {
 router.get('/loans/new', function(req, res, next) {
   let books = models.Book.findAll({attributes: ['id','title']});
   let patrons = models.Patron.findAll({attributes: ['id','first_name','last_name']});
-  
   Promise.all([books,patrons]).then(function(querys) {
-    // console.log(querys[0],querys[1]);
     res.render('newloan', {books: querys[0], patrons: querys[1]});
   });
-  
 });
 
 router.post('/loans/new', function(req, res, next) {
   models.Loan.create(req.body).then(function() {
     res.redirect('/loans');
   });
+});
+
+router.get('/loans/return/:loanid',(req,res,next) => {
+  models.Loan.find({
+    where: {
+      id: req.params.loanid
+    },
+    include: [
+        {
+          model: models.Book,
+          attributes: [
+            'title'
+          ]
+        },
+        {
+          model: models.Patron,
+          attributes: [
+            'first_name',
+            'last_name'
+          ]
+        }
+      ]
+  }).then(function(loan) {
+      res.render('returnbook', {loan,title: 'Return Book'});
+  });
+});
+
+router.put('/loans/return/:loanid',(req,res,next) => {
+  models.Loan.find({
+    where: {
+      id: req.params.loanid
+    }
+  }).then(function(loan) {
+    let today = new Date().toISOString().slice(0,10);
+    loan.update({
+      returned_on: today
+    }).then((loan) => {
+      res.redirect('/loans');
+    });
+  });
+});
+
+router.get('/testnext', (req,res,next) => {
+  req.one = "one";
+  next();
+}, (req,res,next) => {
+  req.two = "two";
+  next();
+}, (req,res,next) => {
+  req.three = "three";
+  next();
+}, (req,res,next) => {
+  console.log(req.one,req.two,req.three);
+  req.end();
 });
 
 module.exports = router;
