@@ -28,9 +28,9 @@ body
       each loan in book.Loans
         tr
           td
-            a(href="/books/update/" + loan.book_id) #{book.title}
+            a(href="/books/update/" + book.id) #{book.title}
           td
-            a(href="/patrons/update/" + loan.patron_id) #{loan.Patron.first_name} #{loan.Patron.last_name}
+            a(href="/patrons/update/" + loan.Patron.id) #{loan.Patron.first_name} #{loan.Patron.last_name}
           td #{loan.loaned_on}
           td #{loan.return_by}
           td #{loan.returned_on}

@@ -2,7 +2,7 @@ include ./partials/_head.pug
 include ./partials/_nav.pug
 body
   h1 Patron: Return Book
-  p #[strong Book Title:] #{loan.Book.title}
+  p #[strong] Book Title: #{loan.Book.title}
   p #[strong Loaned By:] #{loan.Patron.first_name} #{loan.Patron.last_name}
   p #[strong Loaned On:] #{loan.loaned_on}
   p #[strong Return By:] #{loan.return_by}

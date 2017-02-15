@@ -9,7 +9,7 @@ models.Patron.hasMany(models.Loan);
 
 // Home Route
 router.get('/', function(req, res, next) {
-  res.render('index');
+  res.render('index', {title: "Library Manager"});
 });
 
 // Books Routes
@@ -17,6 +17,11 @@ router.get('/', function(req, res, next) {
 router.get('/books', function(req, res, next) {
   if (req.query.filter === "overdue") {
     models.Loan.findAll({
+      attributes: [
+        "book_id",
+        "return_by",
+        "returned_on"
+      ],
       where: {
         $and: {
           return_by: {
@@ -31,10 +36,14 @@ router.get('/books', function(req, res, next) {
         }
       ]
     }).then(function(loans) {
-      res.render('books', {loans: loans, filter: "overdue"});
+      res.render('books', {loans, filter: "overdue", title: "Overdue Books"});
     });
   } else if (req.query.filter == "checked_out") {
     models.Loan.findAll({
+      attributes: [
+        "book_id",
+        "returned_on"
+      ],
       where: {
         returned_on: null
       },
@@ -44,17 +53,17 @@ router.get('/books', function(req, res, next) {
         }
       ]
     }).then(function(loans) {
-      res.render('books', {loans: loans, filter: "checked"});
+      res.render('books', {loans, filter: "checked", title: "Checked Out Books"});
     });
   } else {
     models.Book.findAll().then(function(books) {
-      res.render('books', {books: books, filter: "all"});
+      res.render('books', {books, filter: "all", title: "Books"});
     });
   }
 });
 
 router.get('/books/new', function(req, res, next) {
-  res.render('newbook');
+  res.render('newbook', {title: "New Book"});
 });
 
 router.post('/books/new', function(req, res, next) {
@@ -71,13 +80,24 @@ router.get('/books/update/:bookid', function(req, res, next) {
     include: [
       {
         model: models.Loan,
+        attributes: [
+          "id",
+          "loaned_on",
+          "return_by",
+          "returned_on"
+        ],
         include: [{
-          model: models.Patron
+          model: models.Patron,
+          attributes: [
+            "id",
+            "first_name",
+            "last_name",
+          ],
         }]
       }
     ]
   }).then(function(book) {
-    res.render('bookdetail', {book: book});
+    res.render('bookdetail', {book, title: book.title});
   });
 });
 
@@ -93,12 +113,12 @@ router.put('/books/update', function(req, res, next) {
 
 router.get('/patrons', function(req, res, next) {
   models.Patron.findAll().then(function(patrons) {
-    res.render('patrons', {patrons: patrons});
+    res.render('patrons', {patrons, title: "Patrons"});
   });
 });
 
 router.get('/patrons/new', function(req, res, next) {
-  res.render('newpatron');
+  res.render('newpatron', {title: "New Patron"});
 });
 
 router.post('/patrons/new', function(req, res, next) {
@@ -115,13 +135,23 @@ router.get('/patrons/update/:patronid', function(req, res, next) {
     include: [
       {
         model: models.Loan,
+        attributes: [
+          "id",
+          "loaned_on",
+          "return_by",
+          "returned_on"
+        ],
         include: [{
-          model: models.Book
+          model: models.Book,
+          attributes: [
+            "id",
+            "title"
+          ],
         }]
       }
     ]
   }).then(function(patron) {
-    res.render('patrondetail', {patron: patron});
+    res.render('patrondetail', {patron, title: patron.first_name + " " + patron.last_name});
   });
 });
 
@@ -148,14 +178,23 @@ router.get('/loans', function(req, res, next) {
       },
       include: [
         {
-          model: models.Book
+          model: models.Book,
+          attributes: [
+            "id",
+            "title"
+          ],
         },
         {
-          model: models.Patron
+          model: models.Patron,
+          attributes: [
+            "id",
+            "first_name",
+            "last_name"
+          ],
         }
       ]
     }).then(function(loans) {
-      res.render('loans', {loans: loans, filter: "overdue"});
+      res.render('loans', {loans, filter: "overdue", title: "Overdue Loans"});
     });
   } else if (req.query.filter == "checked_out") {
     models.Loan.findAll({
@@ -164,36 +203,63 @@ router.get('/loans', function(req, res, next) {
       },
       include: [
         {
-          model: models.Book
+          model: models.Book,
+          attributes: [
+            "id",
+            "title"
+          ],
         },
         {
-          model: models.Patron
+          model: models.Patron,
+          attributes: [
+            "id",
+            "first_name",
+            "last_name"
+          ],
         }
       ]
     }).then(function(loans) {
-      res.render('loans', {loans: loans, filter: "checked"});
+      res.render('loans', {loans, filter: "checked", title: "Checked Out Books"});
     });
   } else {
       models.Loan.findAll({
       include: [
         {
-          model: models.Book
+          model: models.Book,
+          attributes: [
+            "id",
+            "title"
+          ],
         },
         {
-          model: models.Patron
+          model: models.Patron,
+          attributes: [
+            "id",
+            "first_name",
+            "last_name"
+          ],
         }
       ]
     }).then(function(loans) {
-      res.render('loans', {loans: loans, filter: "all"});
+      res.render('loans', {loans, filter: "all", title: "Loans"});
     });
   }
 });
 
 router.get('/loans/new', function(req, res, next) {
-  let books = models.Book.findAll({attributes: ['id','title']});
-  let patrons = models.Patron.findAll({attributes: ['id','first_name','last_name']});
+  let books = models.Book.findAll({
+    attributes: [
+      'title'
+    ]
+  });
+  let patrons = models.Patron.findAll({
+    attributes: [
+      'first_name',
+      'last_name'
+    ]
+  });
   Promise.all([books,patrons]).then(function(querys) {
-    res.render('newloan', {books: querys[0], patrons: querys[1]});
+    res.render('newloan', {books: querys[0], patrons: querys[1], title: "New Loan"});
   });
 });
 
@@ -212,12 +278,14 @@ router.get('/loans/return/:loanid',(req,res,next) => {
         {
           model: models.Book,
           attributes: [
+            "id",
             'title'
           ]
         },
         {
           model: models.Patron,
           attributes: [
+            "id",
             'first_name',
             'last_name'
           ]
