@@ -5,7 +5,6 @@ body
     h2.error Please fix the following errors and re-submit:
           ul.error
             each item in error.errors
-              //- li #{item} 
               if item.message == "Validation notEmpty failed"
                 li #{item.path} can not be blank
               else

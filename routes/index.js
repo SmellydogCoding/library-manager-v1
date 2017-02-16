@@ -67,13 +67,12 @@ router.get('/books/new', function(req, res, next) {
 });
 
 router.post('/books/new', function(req, res, next) {
-  let data = req.body;
   models.Book.create(req.body).then(function() {
     res.redirect('/books');
   }).catch((error) => {
     console.log(error)
     if (error.name === "SequelizeValidationError") {
-      res.render('newbook', {title: "New Book", error,data: res.req.body});
+      res.render('newbook', {title: "New Book", error, data: res.req.body});
     } else {
       throw error;
     }
@@ -132,6 +131,13 @@ router.get('/patrons/new', function(req, res, next) {
 router.post('/patrons/new', function(req, res, next) {
   models.Patron.create(req.body).then(function() {
     res.redirect('/patrons');
+  }).catch((error) => {
+    console.log(error)
+    if (error.name === "SequelizeValidationError") {
+      res.render('newpatron', {title: "New Patron", error, data: res.req.body});
+    } else {
+      throw error;
+    }
   });
 });
 

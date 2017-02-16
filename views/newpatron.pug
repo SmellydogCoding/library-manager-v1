@@ -1,19 +1,43 @@
 include ./partials/_head.pug
 include ./partials/_nav.pug
 body
+  if error
+    h2.error Please fix the following errors and re-submit:
+          ul.error
+            each item in error.errors 
+              if item.message == "Validation notEmpty failed"
+                li #{item.path} can not be blank
+              else
+                li #{item.message}
   h1 New Patron
   form(action="/patrons/new" method="post")
-    p
-      label(for="first-name") First Name #[input#first-name(type="text" name="first_name" required)]
-    p
-      label(for="last-name") Last Name #[input#last-name(type="text" name="last_name" required)]
-    p
-      label(for="address") Address #[input#address(type="text" name="address" required)]
-    p
-      label(for="email") Email #[input#email(type="text" name="email" required)]
-    p
-      label(for="library-id") Library Id #[input#zip-code(type="text" name="library_id" required)]
-    p
-      label(for="zip-code") Zip Code #[input#zip-code(type="text" name="zip_code" required)]
-    p
-      input(type="submit" value="Create New Patron")
+    if data
+      p
+      label(for="first-name") First Name #[input#first-name(type="text" name="first_name" value=data.first_name)]
+      p
+        label(for="last-name") Last Name #[input#last-name(type="text" name="last_name" value=data.last_name)]
+      p
+        label(for="address") Address #[input#address(type="text" name="address" value=data.address)]
+      p
+        label(for="email") Email #[input#email(type="text" name="email" value=data.email)]
+      p
+        label(for="library-id") Library Id #[input#zip-code(type="text" name="library_id" value=library_id)]
+      p
+        label(for="zip-code") Zip Code #[input#zip-code(type="text" name="zip_code" value=zip_code)]
+      p
+        input(type="submit" value="Create New Patron")
+    else
+      p
+        label(for="first-name") First Name #[input#first-name(type="text" name="first_name")]
+      p
+        label(for="last-name") Last Name #[input#last-name(type="text" name="last_name")]
+      p
+        label(for="address") Address #[input#address(type="text" name="address")]
+      p
+        label(for="email") Email #[input#email(type="text" name="email")]
+      p
+        label(for="library-id") Library Id #[input#zip-code(type="text" name="library_id")]
+      p
+        label(for="zip-code") Zip Code #[input#zip-code(type="text" name="zip_code")]
+      p
+        input(type="submit" value="Create New Patron")
