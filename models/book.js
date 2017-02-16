@@ -3,15 +3,26 @@ module.exports = function(sequelize, DataTypes) {
   var Book = sequelize.define('Book', {
     id: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
+      primaryKey: true
+    },
+    title: {
+      type: DataTypes.STRING,
       validate: {
-        // name: property
-        // or name: {msg: "custom error message"}
+        notEmpty: true
       }
     },
-    title: DataTypes.STRING,
-    author: DataTypes.STRING,
-    genre: DataTypes.STRING,
+    author: {
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true
+      }
+    },
+    genre: {
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true
+      }
+    },
     first_published: DataTypes.INTEGER
     },
     {
@@ -25,7 +36,7 @@ module.exports = function(sequelize, DataTypes) {
       }
     },
     instanceMethods: {
-      // add some instance methods here
+      
     }
   });
   return Book;

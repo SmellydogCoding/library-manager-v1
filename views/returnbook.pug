@@ -8,6 +8,6 @@ body
   p #[strong Return By:] #{loan.return_by}
   form(action="/loans/return/" + loan.id + "?_method=PUT" method="post")
     p 
-      label(for="returned_on") Returned on: #[input#returned_on(type="date" value="")]
+      label(for="returned_on") Returned on: #[input#returned_on(type="date")]
     p
       input(type="submit" value="Return Book")

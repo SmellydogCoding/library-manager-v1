@@ -67,9 +67,17 @@ router.get('/books/new', function(req, res, next) {
 });
 
 router.post('/books/new', function(req, res, next) {
+  let data = req.body;
   models.Book.create(req.body).then(function() {
     res.redirect('/books');
-  });
+  }).catch((error) => {
+    console.log(error)
+    if (error.name === "SequelizeValidationError") {
+      res.render('newbook', {title: "New Book", error,data: res.req.body});
+    } else {
+      throw error;
+    }
+  }); 
 });
 
 router.get('/books/update/:bookid', function(req, res, next) {
