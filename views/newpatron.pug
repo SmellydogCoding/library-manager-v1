@@ -1,14 +1,11 @@
 include ./partials/_head.pug
 include ./partials/_nav.pug
 body
-  if error
+  if errors
     h2.error Please fix the following errors and re-submit:
           ul.error
-            each item in error.errors 
-              if item.message == "Validation notEmpty failed"
-                li #{item.path} can not be blank
-              else
-                li #{item.message}
+            each item in errors 
+              li #{item.message}
   h1 New Patron
   form(action="/patrons/new" method="post")
     if data
