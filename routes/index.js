@@ -131,18 +131,15 @@ router.get('/patrons/new', function(req, res, next) {
 router.post('/patrons/new', function(req, res, next) {
   models.Patron.create(req.body).then(function() {
     res.redirect('/patrons');
-  }).catch((error) => {
-    if (error.name === "SequelizeValidationError") {
-      let errorArray = error.errors;
-        errorArray.forEach((value,index,errorArray) => {
-          if (errorArray[index].message === "That is not a valid email address" && errorArray[index - 1].message === "The Email field can not be blank") {
-            errorArray.splice(index,1);
-          }
-          else if (errorArray[index].message === "That is not a valid zip code (please use the 5 digit zip code)" && errorArray[index - 1].message === "The Zip Code field can not be blank") {
-            errorArray.splice(index,1);
-          }
-        });
-      res.render('newpatron', {title: "New Patron", errors: errorArray, data: res.req.body});
+  }).catch((errors) => {
+    if (errors.name === "SequelizeValidationError") {
+      let errorArray = errors.errors;
+      errors.fieldList = {};
+      errorArray.forEach((value) => {
+        let key = value.path;
+        errors.fieldList[key] = key;
+      });
+      res.render('newpatron', {title: "New Patron", errors, data: res.req.body});
     } else {
       throw error;
     }

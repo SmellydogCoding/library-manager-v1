@@ -4,23 +4,41 @@ body
   if errors
     h2.error Please fix the following errors and re-submit:
           ul.error
-            each item in errors 
+            each item in errors.errors
               li #{item.message}
   h1 New Patron
   form(action="/patrons/new" method="post")
     if data
       p
-      label(for="first-name") First Name #[input#first-name(type="text" name="first_name" value=data.first_name)]
+        if errors.fieldList.first_name
+          label(for="first-name") First Name #[input#first-name.formError(type="text" name="first_name" value=data.first_name)]
+        else
+          label(for="first-name") First Name #[input#first-name(type="text" name="first_name" value=data.first_name)]
       p
-        label(for="last-name") Last Name #[input#last-name(type="text" name="last_name" value=data.last_name)]
+        if errors.fieldList.last_name
+          label(for="last-name") Last Name #[input#last-name.formError(type="text" name="last_name" value=data.last_name)]
+        else
+          label(for="last-name") Last Name #[input#last-name(type="text" name="last_name" value=data.last_name)]
       p
-        label(for="address") Address #[input#address(type="text" name="address" value=data.address)]
+        if errors.fieldList.address
+          label(for="address") Address #[input#address.formError(type="text" name="address" value=data.address)]
+        else
+          label(for="address") Address #[input#address(type="text" name="address" value=data.address)]
       p
-        label(for="email") Email #[input#email(type="text" name="email" value=data.email)]
+        if errors.fieldList.email
+          label(for="email") Email #[input#email.formError(type="text" name="email" value=data.email)]
+        else
+          label(for="email") Email #[input#email(type="text" name="email" value=data.email)]
       p
-        label(for="library-id") Library Id #[input#zip-code(type="text" name="library_id" value=library_id)]
+        if errors.fieldList.library_id
+          label(for="library-id") Library Id #[input#zip-code.formError(type="text" name="library_id" value=data.library_id)]
+        else
+          label(for="library-id") Library Id #[input#zip-code(type="text" name="library_id" value=data.library_id)]
       p
-        label(for="zip-code") Zip Code #[input#zip-code(type="text" name="zip_code" value=zip_code)]
+        if errors.fieldList.zip_code
+          label(for="zip-code") Zip Code #[input#zip-code.formError(type="text" name="zip_code" value=data.zip_code)]
+        else
+          label(for="zip-code") Zip Code #[input#zip-code(type="text" name="zip_code" value=data.zip_code)]
       p
         input(type="submit" value="Create New Patron")
     else
@@ -33,7 +51,7 @@ body
       p
         label(for="email") Email #[input#email(type="text" name="email")]
       p
-        label(for="library-id") Library Id #[input#zip-code(type="text" name="library_id")]
+        label(for="library-id") Library Id #[input#zip-code(type="text" name="library_id" value="MCL")]
       p
         label(for="zip-code") Zip Code #[input#zip-code(type="text" name="zip_code")]
       p
