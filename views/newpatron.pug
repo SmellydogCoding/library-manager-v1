@@ -31,9 +31,9 @@ body
           label(for="email") Email #[input#email(type="text" name="email" value=data.email)]
       p
         if errors.fieldList.library_id
-          label(for="library-id") Library Id #[input#zip-code.formError(type="text" name="library_id" value=data.library_id)]
+          label(for="library-id") Library Id #[input#library-id.formError(type="text" name="library_id" value=data.library_id)]
         else
-          label(for="library-id") Library Id #[input#zip-code(type="text" name="library_id" value=data.library_id)]
+          label(for="library-id") Library Id #[input#library-id(type="text" name="library_id" value=data.library_id)]
       p
         if errors.fieldList.zip_code
           label(for="zip-code") Zip Code #[input#zip-code.formError(type="text" name="zip_code" value=data.zip_code)]

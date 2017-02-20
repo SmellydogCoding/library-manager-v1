@@ -69,10 +69,10 @@ router.get('/books/new', function(req, res, next) {
 router.post('/books/new', function(req, res, next) {
   models.Book.create(req.body).then(function() {
     res.redirect('/books');
-  }).catch((error) => {
-    console.log(error)
-    if (error.name === "SequelizeValidationError") {
-      res.render('newbook', {title: "New Book", error, data: res.req.body});
+  }).catch((errors) => {
+    if (errors.name === "SequelizeValidationError") {
+      errors = createFieldList(errors);
+      res.render('newbook', {title: "New Book", errors, data: res.req.body});
     } else {
       throw error;
     }
@@ -112,6 +112,39 @@ router.put('/books/update', function(req, res, next) {
   models.Book.findById(req.body.bookid).then(function(book) {
     book.update(req.body).then(function() {
       res.redirect(303,'/books');
+    }).catch((errors) => {
+      if (errors.name === "SequelizeValidationError") {
+        let book = models.Book.find({
+          where: {
+            id: res.req.body.bookid
+          },
+          include: [
+            {
+              model: models.Loan,
+              attributes: [
+                "id",
+                "loaned_on",
+                "return_by",
+                "returned_on"
+              ],
+              include: [{
+                model: models.Patron,
+                attributes: [
+                  "id",
+                  "first_name",
+                  "last_name"
+                ],
+              }]
+            }
+          ]
+        });
+        Promise.all([book]).then((book) => {
+          errors = createFieldList(errors);
+        res.render('bookdetail', {title: book[0].title, errors, book: book[0], data: res.req.body});
+        });
+      } else {
+        throw error;
+      }
     });
   });
 });
@@ -133,12 +166,7 @@ router.post('/patrons/new', function(req, res, next) {
     res.redirect('/patrons');
   }).catch((errors) => {
     if (errors.name === "SequelizeValidationError") {
-      let errorArray = errors.errors;
-      errors.fieldList = {};
-      errorArray.forEach((value) => {
-        let key = value.path;
-        errors.fieldList[key] = key;
-      });
+      errors = createFieldList(errors);
       res.render('newpatron', {title: "New Patron", errors, data: res.req.body});
     } else {
       throw error;
@@ -178,6 +206,38 @@ router.put('/patrons/update', function(req, res, next) {
   models.Patron.findById(req.body.patronid).then(function(patron) {
     patron.update(req.body).then(function() {
       res.redirect(303,'/patrons');
+    }).catch((errors) => {
+      if (errors.name === "SequelizeValidationError") {
+        let patron = models.Patron.find({
+          where: {
+            id: res.req.body.patronid
+          },
+          include: [
+            {
+              model: models.Loan,
+              attributes: [
+                "id",
+                "loaned_on",
+                "return_by",
+                "returned_on"
+              ],
+              include: [{
+                model: models.Book,
+                attributes: [
+                  "id",
+                  "title"
+                ],
+              }]
+            }
+          ]
+        });
+        Promise.all([patron]).then((patron) => {
+          errors = createFieldList(errors);
+        res.render('patrondetail', {title: patron[0].first_name + " " + patron[0].last_name, errors, patron: patron[0], data: res.req.body});
+        });
+      } else {
+        throw error;
+      }
     });
   });
 });
@@ -330,19 +390,15 @@ router.put('/loans/return/:loanid',(req,res,next) => {
   });
 });
 
-router.get('/testnext', (req,res,next) => {
-  req.one = "one";
-  next();
-}, (req,res,next) => {
-  req.two = "two";
-  next();
-}, (req,res,next) => {
-  req.three = "three";
-  next();
-}, (req,res,next) => {
-  console.log(req.one,req.two,req.three);
-  req.end();
-});
+const createFieldList = (errors) => {
+  let errorArray = errors.errors;
+  errors.fieldList = {};
+  errorArray.forEach((value) => {
+    let key = value.path;
+    errors.fieldList[key] = key;
+  });
+  return errors
+}
 
 module.exports = router;
 

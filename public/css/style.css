@@ -93,6 +93,14 @@ input[type=text], select {
   margin-left: 10px;
 }
 
+.error {
+  font-size: 1.05em;
+}
+
+.error ul {
+  color: red;
+}
+
 .formError {
    border: 1px solid red;
 }
