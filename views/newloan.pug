@@ -1,21 +1,58 @@
 include ./partials/_head.pug
 include ./partials/_nav.pug
 body
-  h1 New Loan
-  form(action="/loans/new" method="post")
-    p 
-      label(for="book_id") Book
-      select#book_id(name="book_id")
-        each book in books
-          option(value=book.id) #{book.title}
-    p 
-      label(for="patron_id") Patron
-      select#patron_id(name="patron_id")
-        each patron in patrons
-          option(value=patron.id) #{patron.first_name} #{patron.last_name}
-    p 
-      label(for="loaned_on") Loaned on: #[input#loaned_on(type="date" name="loaned_on" value="")]
-    p 
-      label(for="return_by") Return by: #[input#return_by(type="date" name="return_by" value="")]
-    p 
-      input(type="submit" value="Create New Loan") 
+  if errors
+    h2.error Please fix the following errors and re-submit:
+          ul.error
+            each item in errors.errors
+              li #{item.message}
+    h1 New Loan
+    form(action="/loans/new" method="post")
+      p 
+        label(for="book_id") Book
+        select#book_id(name="book_id")
+          each book in books
+            if book.id == data.book_id
+              option(value=book.id selected) #{book.title} - Book ID: #{book.id}
+            else
+              option(value=book.id) #{book.title} - Book ID: #{book.id}
+      p 
+        label(for="patron_id") Patron
+        select#patron_id(name="patron_id")
+          each patron in patrons
+            - let patronName = patron.first_name + " " + patron.last_name
+            if patronName = data.patron_id
+              option(value=patron.id selected) #{patron.first_name} #{patron.last_name} - Library ID: #{patron.library_id}
+            else
+              option(value=patron.id) #{patron.first_name} #{patron.last_name} - Library ID: #{patron.library_id}
+      p
+        if errors.fieldList.loaned_on 
+          label(for="loaned_on") Loaned on: #[input#loaned_on.formError(type="text" name="loaned_on" value=data.loaned_on)]
+        else
+          label(for="loaned_on") Loaned on: #[input#loaned_on(type="text" name="loaned_on" value=data.loaned_on)]
+      p 
+        if errors.fieldList.return_by
+          label(for="return_by") Return by: #[input#return_by.formError(type="text" name="return_by" value=data.return_by)]
+        else
+          label(for="return_by") Return by: #[input#return_by(type="text" name="return_by" value=data.return_by)]
+      p 
+        input(type="submit" value="Create New Loan") 
+  else
+    h1 New Loan
+    form(action="/loans/new" method="post")
+      p 
+        label(for="book_id") Book
+        select#book_id(name="book_id")
+          each book in books
+            option(value=book.id) #{book.title} - Book ID: #{book.id}
+      p 
+        label(for="patron_id") Patron
+        select#patron_id(name="patron_id")
+          each patron in patrons
+            option(value=patron.id) #{patron.first_name} #{patron.last_name} - Library ID: #{patron.library_id}
+      p 
+        label(for="loaned_on") Loaned on: #[input#loaned_on(type="text" name="loaned_on" value="")]
+      p 
+        label(for="return_by") Return by: #[input#return_by(type="text" name="return_by" value="")]
+      p 
+        input(type="submit" value="Create New Loan")

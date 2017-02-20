@@ -1,13 +1,39 @@
 include ./partials/_head.pug
 include ./partials/_nav.pug
 body
-  h1 Patron: Return Book
-  p #[strong] Book Title: #{loan.Book.title}
-  p #[strong Loaned By:] #{loan.Patron.first_name} #{loan.Patron.last_name}
-  p #[strong Loaned On:] #{loan.loaned_on}
-  p #[strong Return By:] #{loan.return_by}
-  form(action="/loans/return/" + loan.id + "?_method=PUT" method="post")
-    p 
-      label(for="returned_on") Returned on: #[input#returned_on(type="date")]
-    p
-      input(type="submit" value="Return Book")
+  if errors
+    h2.error Please fix the following errors and re-submit:
+          ul.error
+            each item in errors.errors
+              li #{item.message}
+    h1 #{data.patronName}: Return Book
+    p #[strong Book Title:] #{data.title}
+    p #[strong Loaned By:] #{data.patronName}
+    p #[strong Loaned On:] #{data.loaned_on}
+    p #[strong Return By:] #{data.return_by}
+    form(action="/loans/return/" + data.loanid + "?_method=PUT" method="post")
+      input(type="hidden" name="loanid" value=data.loanid)
+      input(type="hidden" name="title" value=data.title)
+      input(type="hidden" name="patronName" value=data.patronName)
+      input(type="hidden" name="loaned_on" value=data.loaned_on)
+      input(type="hidden" name="return_by" value=data.return_by)
+      p 
+        label(for="returned_on") Returned on: #[input#returned_on.formError(type="text" name="returned_on" value=data.returned_on)]
+      p
+        input(type="submit" value="Return Book")
+  else
+    h1 #{loan.Patron.first_name} #{loan.Patron.last_name}: Return Book
+    p #[strong Book Title:] #{loan.Book.title}
+    p #[strong Loaned By:] #{loan.Patron.first_name} #{loan.Patron.last_name}
+    p #[strong Loaned On:] #{loan.loaned_on}
+    p #[strong Return By:] #{loan.return_by}
+    form(action="/loans/return/" + loan.id + "?_method=PUT" method="post")
+      input(type="hidden" name="loanid" value=loan.id)
+      input(type="hidden" name="title" value=loan.Book.title)
+      input(type="hidden" name="patronName" value=loan.Patron.first_name + " " + loan.Patron.last_name)
+      input(type="hidden" name="loaned_on" value=loan.loaned_on)
+      input(type="hidden" name="return_by" value=loan.return_by)
+      p 
+        label(for="returned_on") Returned on: #[input#returned_on(type="text" name="returned_on")]
+      p
+        input(type="submit" value="Return Book")

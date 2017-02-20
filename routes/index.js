@@ -328,13 +328,16 @@ router.get('/loans', function(req, res, next) {
 router.get('/loans/new', function(req, res, next) {
   let books = models.Book.findAll({
     attributes: [
+      'id',
       'title'
     ]
   });
   let patrons = models.Patron.findAll({
     attributes: [
+      'id',
       'first_name',
-      'last_name'
+      'last_name',
+      'library_id'
     ]
   });
   Promise.all([books,patrons]).then(function(querys) {
@@ -345,6 +348,29 @@ router.get('/loans/new', function(req, res, next) {
 router.post('/loans/new', function(req, res, next) {
   models.Loan.create(req.body).then(function() {
     res.redirect('/loans');
+  }).catch((errors) => {
+    if (errors.name === "SequelizeValidationError") {
+      let books = models.Book.findAll({
+        attributes: [
+          'id',
+          'title'
+        ]
+      });
+      let patrons = models.Patron.findAll({
+        attributes: [
+          'id',
+          'first_name',
+          'last_name',
+          'library_id'
+        ]
+      });
+      Promise.all([books,patrons]).then(function(querys) {
+          errors = createFieldList(errors);
+          res.render('newloan', {title: "New Loan",books: querys[0], patrons: querys[1], errors, data: res.req.body});
+      });
+    } else {
+      throw error;
+    }
   });
 });
 
@@ -381,12 +407,26 @@ router.put('/loans/return/:loanid',(req,res,next) => {
       id: req.params.loanid
     }
   }).then(function(loan) {
-    let today = new Date().toISOString().slice(0,10);
-    loan.update({
-      returned_on: today
-    }).then((loan) => {
-      res.redirect('/loans');
-    });
+    if (res.req.body.returned_on === "") {
+      let errors = {errors:[{message: 'The Returned on field can not be blank.'}]};
+      res.render('returnbook', {title: 'Return Book', errors, data: res.req.body});
+    } else if (new Date(res.req.body.returned_on) < new Date(loan.loaned_on)) {
+      let errors = {errors:[{message: 'The Returned on date can not be before the Loaned on date.'}]};
+      res.render('returnbook', {title: 'Return Book', errors, data: res.req.body});
+    } else {
+      loan.update({
+        returned_on: res.req.body.returned_on
+      }).then((loan) => {
+        res.redirect('/loans');
+      }).catch((errors) => {
+        if (errors.name === "SequelizeValidationError") {
+          errors = createFieldList(errors);
+          res.render('returnbook', {title: "Return Book", errors, data: res.req.body});
+        } else {
+          throw error;
+        }
+      });
+    }
   });
 });
 
