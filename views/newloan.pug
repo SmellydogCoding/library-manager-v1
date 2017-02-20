@@ -51,8 +51,8 @@ body
           each patron in patrons
             option(value=patron.id) #{patron.first_name} #{patron.last_name} - Library ID: #{patron.library_id}
       p 
-        label(for="loaned_on") Loaned on: #[input#loaned_on(type="text" name="loaned_on" value="")]
+        label(for="loaned_on") Loaned on: #[input#loaned_on(type="text" name="loaned_on" value=today)]
       p 
-        label(for="return_by") Return by: #[input#return_by(type="text" name="return_by" value="")]
+        label(for="return_by") Return by: #[input#return_by(type="text" name="return_by" value=nextWeek)]
       p 
         input(type="submit" value="Create New Loan")

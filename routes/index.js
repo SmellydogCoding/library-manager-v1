@@ -341,7 +341,11 @@ router.get('/loans/new', function(req, res, next) {
     ]
   });
   Promise.all([books,patrons]).then(function(querys) {
-    res.render('newloan', {books: querys[0], patrons: querys[1], title: "New Loan"});
+    let date = new Date();
+    let today = date.toISOString().slice(0,10);
+    let nextWeek = date.setDate(date.getDate() + 7);
+    nextWeek = new Date(nextWeek).toISOString().slice(0,10);
+    res.render('newloan', {books: querys[0], patrons: querys[1], today, nextWeek, title: "New Loan"});
   });
 });
 
@@ -397,7 +401,8 @@ router.get('/loans/return/:loanid',(req,res,next) => {
         }
       ]
   }).then(function(loan) {
-      res.render('returnbook', {loan,title: 'Return Book'});
+      let today = new Date().toISOString().slice(0,10);
+      res.render('returnbook', {loan, title: 'Return Book', today});
   });
 });
 
