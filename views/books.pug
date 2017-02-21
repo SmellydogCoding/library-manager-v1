@@ -5,11 +5,14 @@ body
   p 
     a(href="/books/new" class="button" class="button") Create New Book
   if filter == "all"
-    p Filters: All | #[a(href="/books?filter=overdue") Overdue] | #[a(href="/books?filter=checked_out") Checked Out]
+    p.filters Filters: All | #[a(href="/books?filter=overdue") Overdue] | #[a(href="/books?filter=checked_out") Checked Out]
   if filter == "overdue"
-    p Filters: #[a(href="/books") All] | Overdue | #[a(href="/books?filter=checked_out") Checked Out]
+    p.filters Filters: #[a(href="/books") All] | Overdue | #[a(href="/books?filter=checked_out") Checked Out]
   if filter == "checked"
-    p Filters: #[a(href="/books") All] | #[a(href="/books?filter=overdue") Overdue] | Checked Out
+    p.filters Filters: #[a(href="/books") All] | #[a(href="/books?filter=overdue") Overdue] | Checked Out
+  form.search(action="/search?type=book" method="post")
+    input.search-box(type="text" name="query")
+    input.search-button(type="submit" value="Search")
   table
     thead
       tr

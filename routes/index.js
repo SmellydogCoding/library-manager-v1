@@ -435,6 +435,99 @@ router.put('/loans/return/:loanid',(req,res,next) => {
   });
 });
 
+router.post('/search', function(req, res, next) {
+  if (req.query.type === "book") {
+    let searchTerm = '%' + req.body.query + '%';
+    models.Book.findAll({
+      where: {
+        $or: [
+          {
+            title: {
+              $like: searchTerm
+            }
+          },
+          {
+            author: {
+              $like: searchTerm
+            }
+          },
+          {
+            genre: {
+              $like: searchTerm
+            }
+          }
+        ]
+      }
+    }).then((books) => {
+       if (books.length === 0) {
+         res.render('search', {title: "Search Results", books, results: "false"});
+       } else {
+        res.render('search', {title: "Search Results", books});
+       }
+    }).catch((error) => {
+      res.render('search', {title: "Search Results", message: error.message});
+    });
+  } else if (req.query.type === "patron") {
+    let searchTerm = '%' + req.body.query + '%';
+    models.Patron.findAll({
+      where: {
+        $or: [
+          {
+            first_name: {
+              $like: searchTerm
+            }
+          },
+          {
+            last_name: {
+              $like: searchTerm
+            }
+          },
+          {
+            address: {
+              $like: searchTerm
+            }
+          },
+          {
+            email: {
+              $like: searchTerm
+            }
+          },
+          {
+            library_id: {
+              $like: searchTerm
+            }
+          },
+          {
+            zip_code: {
+              $like: searchTerm
+            }
+          }
+        ]
+      }
+    }).then((patrons) => {
+       if (patrons.length === 0) {
+         res.render('search', {title: "Search Results", patrons, results: "false"});
+       } else {
+        res.render('search', {title: "Search Results", patrons});
+       }
+    }).catch((error) => {
+        res.render('search', {title: "Search Results", message: error.message});
+      });
+  }
+});  
+  // }
+  // models.Book.create(req.body).then(function() {
+  //   res.redirect('/books');
+  // }).catch((errors) => {
+  //   if (errors.name === "SequelizeValidationError") {
+  //     errors = createFieldList(errors);
+  //     res.render('newbook', {title: "New Book", errors, data: res.req.body});
+  //   } else {
+  //     throw error;
+  //   }
+  // }); 
+// });
+
 const createFieldList = (errors) => {
   let errorArray = errors.errors;
   errors.fieldList = {};

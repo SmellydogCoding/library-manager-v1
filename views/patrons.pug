@@ -2,8 +2,11 @@ include ./partials/_head.pug
 include ./partials/_nav.pug
 body
   h1 Patrons
-  p 
+  p.search 
     a(href="patrons/new" class="button") Create New Patron
+  form.search(action="/search?type=patron" method="post")
+    input.search-box-patron(type="text" name="query")
+    input.search-button(type="submit" value="Search")
   table
     thead
       tr

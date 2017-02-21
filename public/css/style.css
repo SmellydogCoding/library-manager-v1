@@ -128,6 +128,25 @@ input[type=text], select {
   color: #fff;
 }
 
+/*search*/
+
+.filters,.search {
+  display: inline-block;
+  border-top: none;
+}
+
+.search-box {
+  margin-left: 12.0em !important;
+}
+
+.search-box-patron {
+  margin-left: 29.0em !important;
+}
+
+.search-button {
+  margin-left: 0.25em !important;
+}
+
 /*helper*/
 
 .hidden {

@@ -1,0 +1,58 @@
+include ./partials/_head.pug
+include ./partials/_nav.pug
+body
+  if message
+    h2.error oh my, I'm sorry to report that something has gone amiss.  Please tell the website manager:
+      ul.error
+        li #{message}
+  if books
+    h2.search Search Results: Books
+    form.search(action="/search?type=book" method="post")
+      input.search-box(type="text" name="query")
+      input.search-button(type="submit" value="Search")
+    table
+      thead
+        tr
+          th Title
+          th Author
+          th Genre
+          th Year Released
+      tbody.itemList
+        if books
+          each book in books
+            tr.item
+              td
+                a(href="/books/update/" + book.id) #{book.title}
+              td #{book.author}
+              td #{book.genre}
+              td #{book.first_published}
+    if results == "false"
+      p I'm sorry, but there were no books that matched your search criteria.
+  if patrons
+    h2.search Search Results: Patrons
+    form.search(action="/search?type=patron" method="post")
+      input.search-box(type="text" name="query")
+      input.search-button(type="submit" value="Search")
+    table
+      thead
+        tr
+          th Name 
+          th Address
+          th Email
+          th Library ID
+          th Zip
+      tbody.itemList
+        each patron in patrons
+          tr.item
+            td 
+              a(href="/patrons/update/" + patron.id) #{patron.first_name} #{patron.last_name}
+            td #{patron.address}
+            td #{patron.email}
+            td #{patron.library_id}
+            td #{patron.zip_code}
+    if results == "false"
+      p I'm sorry, but there were no patrons that matched your search criteria.
+  if !message && !results
+    div.pagination
+    script(src="js/jquery-3.1.1.min.js")
+    script(src="js/app.js")
