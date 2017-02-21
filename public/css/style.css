@@ -93,6 +93,8 @@ input[type=text], select {
   margin-left: 10px;
 }
 
+/*form validation*/
+
 .error {
   font-size: 1.05em;
 }
@@ -104,3 +106,31 @@ input[type=text], select {
 .formError {
    border: 1px solid red;
 }
+
+/*pagination*/
+
+.pagination td {
+  background-color: #fff;
+  padding-top: 0.5em;
+}
+
+.pagination a{
+  border: 1px solid #eaeaea;
+  border-radius: 5px;
+  padding: 3px 8px;
+  text-decoration: none;
+  color: #000;
+}
+
+.pagination a.active,
+.pagination a:hover{
+  background-color: #4ba6c3;
+  color: #fff;
+}
+
+/*helper*/
+
+.hidden {
+  display: none;
+}
+

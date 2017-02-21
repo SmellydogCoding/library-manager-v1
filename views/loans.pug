@@ -19,9 +19,9 @@ body
         th Return by 
         th Returned on
         th Action
-    tbody
+    tbody.itemList
       each loan in loans
-        tr
+        tr.item
           td 
             a(href="/books/update/" + loan.Book.id) #{loan.Book.title}
           td
@@ -31,3 +31,6 @@ body
           td #{loan.returned_on}
           td.button 
             a(href="/loans/return/" + loan.id) Return Book
+  div.pagination
+  script(src="js/jquery-3.1.1.min.js")
+  script(src="js/app.js")

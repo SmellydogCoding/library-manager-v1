@@ -17,10 +17,10 @@ body
         th Author
         th Genre
         th Year Released
-    tbody
+    tbody.itemList
       if books
         each book in books
-          tr
+          tr.item
             td
               a(href="/books/update/" + book.id) #{book.title}
             td #{book.author}
@@ -28,9 +28,12 @@ body
             td #{book.first_published}
       if loans
         each loan in loans
-          tr
+          tr.item
             td
               a(href="/books/update/" + loan.Book.id) #{loan.Book.title}
             td #{loan.Book.author}
             td #{loan.Book.genre}
             td #{loan.Book.first_published}
+  div.pagination
+  script(src="js/jquery-3.1.1.min.js")
+  script(src="js/app.js")
