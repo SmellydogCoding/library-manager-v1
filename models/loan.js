@@ -1,7 +1,7 @@
 'use strict';
-var models = require('../models');
-module.exports = function(sequelize, DataTypes) {
-  var Loan = sequelize.define('Loan', {
+const models = require('../models');
+module.exports = (sequelize, DataTypes) => {
+  const Loan = sequelize.define('Loan', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true

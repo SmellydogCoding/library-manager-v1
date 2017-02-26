@@ -1,20 +1,25 @@
-var express = require('express');
-var router = express.Router();
-var models = require('../models');
+'use strict';
 
+const express = require('express');
+const router = express.Router();
+const models = require('../models');
+const errorList = require('../errorList.js')
+
+// Relationships
 models.Loan.belongsTo(models.Book);
 models.Loan.belongsTo(models.Patron);
 models.Book.hasMany(models.Loan);
 models.Patron.hasMany(models.Loan);
 
 // Home Route
-router.get('/', function(req, res, next) {
+
+router.get('/', (req, res, next) => {
   res.render('index', {title: "Library Manager"});
 });
 
 // Books Routes
 
-router.get('/books', function(req, res, next) {
+router.get('/books', (req, res, next) => {
   if (req.query.filter === "overdue") {
     models.Loan.findAll({
       attributes: [
@@ -22,6 +27,7 @@ router.get('/books', function(req, res, next) {
         "return_by",
         "returned_on"
       ],
+      // overdue books are part of a loan that has a return by date before today and a empty returned on field
       where: {
         $and: {
           return_by: {
@@ -35,7 +41,7 @@ router.get('/books', function(req, res, next) {
           model: models.Book
         }
       ]
-    }).then(function(loans) {
+    }).then((loans) => {
       res.render('books', {loans, filter: "overdue", title: "Overdue Books"});
     });
   } else if (req.query.filter == "checked_out") {
@@ -44,6 +50,7 @@ router.get('/books', function(req, res, next) {
         "book_id",
         "returned_on"
       ],
+      // checked out books are part of a loan that has a empty returned on field
       where: {
         returned_on: null
       },
@@ -52,26 +59,27 @@ router.get('/books', function(req, res, next) {
           model: models.Book
         }
       ]
-    }).then(function(loans) {
+    }).then((loans) => {
       res.render('books', {loans, filter: "checked", title: "Checked Out Books"});
     });
   } else {
-    models.Book.findAll().then(function(books) {
+    models.Book.findAll().then((books) => {
       res.render('books', {books, filter: "all", title: "Books"});
     });
   }
 });
 
-router.get('/books/new', function(req, res, next) {
+router.get('/books/new', (req, res, next) => {
   res.render('newbook', {title: "New Book"});
 });
 
-router.post('/books/new', function(req, res, next) {
-  models.Book.create(req.body).then(function() {
+router.post('/books/new', (req, res, next) => {
+  models.Book.create(req.body).then(() => {
     res.redirect('/books');
   }).catch((errors) => {
     if (errors.name === "SequelizeValidationError") {
-      errors = createFieldList(errors);
+      console.log(errorList.create);
+      errors = errorList.create(errors);
       res.render('newbook', {title: "New Book", errors, data: res.req.body});
     } else {
       throw error;
@@ -79,7 +87,7 @@ router.post('/books/new', function(req, res, next) {
   }); 
 });
 
-router.get('/books/update/:bookid', function(req, res, next) {
+router.get('/books/update/:bookid', (req, res, next) => {
   models.Book.find({
     where: {
       id: req.params.bookid
@@ -103,14 +111,14 @@ router.get('/books/update/:bookid', function(req, res, next) {
         }]
       }
     ]
-  }).then(function(book) {
+  }).then((book) => {
     res.render('bookdetail', {book, title: book.title});
   });
 });
 
-router.put('/books/update', function(req, res, next) {
-  models.Book.findById(req.body.bookid).then(function(book) {
-    book.update(req.body).then(function() {
+router.put('/books/update', (req, res, next) => {
+  models.Book.findById(req.body.bookid).then((book) => {
+    book.update(req.body).then(() => {
       res.redirect(303,'/books');
     }).catch((errors) => {
       if (errors.name === "SequelizeValidationError") {
@@ -138,8 +146,10 @@ router.put('/books/update', function(req, res, next) {
             }
           ]
         });
+        // if there's a validation error updating a book, you have to query that book again
+        // to get the related loan history
         Promise.all([book]).then((book) => {
-          errors = createFieldList(errors);
+          errors = errorList.create(errors);
         res.render('bookdetail', {title: book[0].title, errors, book: book[0], data: res.req.body});
         });
       } else {
@@ -151,22 +161,22 @@ router.put('/books/update', function(req, res, next) {
 
 // Patrons Routes
 
-router.get('/patrons', function(req, res, next) {
-  models.Patron.findAll().then(function(patrons) {
+router.get('/patrons', (req, res, next) => {
+  models.Patron.findAll().then((patrons) => {
     res.render('patrons', {patrons, title: "Patrons"});
   });
 });
 
-router.get('/patrons/new', function(req, res, next) {
+router.get('/patrons/new', (req, res, next) => {
   res.render('newpatron', {title: "New Patron"});
 });
 
-router.post('/patrons/new', function(req, res, next) {
-  models.Patron.create(req.body).then(function() {
+router.post('/patrons/new', (req, res, next) => {
+  models.Patron.create(req.body).then(() => {
     res.redirect('/patrons');
   }).catch((errors) => {
     if (errors.name === "SequelizeValidationError") {
-      errors = createFieldList(errors);
+      errors = errorList.create(errors);
       res.render('newpatron', {title: "New Patron", errors, data: res.req.body});
     } else {
       throw error;
@@ -174,7 +184,7 @@ router.post('/patrons/new', function(req, res, next) {
   });
 });
 
-router.get('/patrons/update/:patronid', function(req, res, next) {
+router.get('/patrons/update/:patronid', (req, res, next) => {
   models.Patron.find({
     where: {
       id: req.params.patronid
@@ -197,14 +207,14 @@ router.get('/patrons/update/:patronid', function(req, res, next) {
         }]
       }
     ]
-  }).then(function(patron) {
+  }).then((patron) => {
     res.render('patrondetail', {patron, title: patron.first_name + " " + patron.last_name});
   });
 });
 
-router.put('/patrons/update', function(req, res, next) {
-  models.Patron.findById(req.body.patronid).then(function(patron) {
-    patron.update(req.body).then(function() {
+router.put('/patrons/update', (req, res, next) => {
+  models.Patron.findById(req.body.patronid).then((patron) => {
+    patron.update(req.body).then(() => {
       res.redirect(303,'/patrons');
     }).catch((errors) => {
       if (errors.name === "SequelizeValidationError") {
@@ -231,8 +241,10 @@ router.put('/patrons/update', function(req, res, next) {
             }
           ]
         });
+        // if there's a validation error updating a patron, you have to query that patron again
+        // to get the related loan history
         Promise.all([patron]).then((patron) => {
-          errors = createFieldList(errors);
+          errors = errorList.create(errors);
         res.render('patrondetail', {title: patron[0].first_name + " " + patron[0].last_name, errors, patron: patron[0], data: res.req.body});
         });
       } else {
@@ -244,9 +256,10 @@ router.put('/patrons/update', function(req, res, next) {
 
 // Loans Routes
 
-router.get('/loans', function(req, res, next) {
+router.get('/loans', (req, res, next) => {
   if (req.query.filter === "overdue") {
     models.Loan.findAll({
+      // overdue loans have a return by date before today and a empty returned on field
       where: {
         $and: {
           return_by: {
@@ -255,6 +268,7 @@ router.get('/loans', function(req, res, next) {
             returned_on: null
         }
       },
+      // loans have a related book and patron
       include: [
         {
           model: models.Book,
@@ -272,11 +286,12 @@ router.get('/loans', function(req, res, next) {
           ],
         }
       ]
-    }).then(function(loans) {
+    }).then((loans) => {
       res.render('loans', {loans, filter: "overdue", title: "Overdue Loans"});
     });
   } else if (req.query.filter == "checked_out") {
     models.Loan.findAll({
+      // checked out loans have an empty returned on field
       where: {
         returned_on: null
       },
@@ -297,7 +312,7 @@ router.get('/loans', function(req, res, next) {
           ],
         }
       ]
-    }).then(function(loans) {
+    }).then((loans) => {
       res.render('loans', {loans, filter: "checked", title: "Checked Out Books"});
     });
   } else {
@@ -319,13 +334,13 @@ router.get('/loans', function(req, res, next) {
           ],
         }
       ]
-    }).then(function(loans) {
+    }).then((loans) => {
       res.render('loans', {loans, filter: "all", title: "Loans"});
     });
   }
 });
 
-router.get('/loans/new', function(req, res, next) {
+router.get('/loans/new', (req, res, next) => {
   let books = models.Book.findAll({
     attributes: [
       'id',
@@ -340,17 +355,20 @@ router.get('/loans/new', function(req, res, next) {
       'library_id'
     ]
   });
-  Promise.all([books,patrons]).then(function(querys) {
+  // get a list of books and patrons for the select options on the new loan page
+  Promise.all([books,patrons]).then((querys) => {
     let date = new Date();
+    // get the yyyy-mm-dd format
     let today = date.toISOString().slice(0,10);
+    // and add 7 days and convert it to the yyyy-mm-dd format
     let nextWeek = date.setDate(date.getDate() + 7);
     nextWeek = new Date(nextWeek).toISOString().slice(0,10);
     res.render('newloan', {books: querys[0], patrons: querys[1], today, nextWeek, title: "New Loan"});
   });
 });
 
-router.post('/loans/new', function(req, res, next) {
-  models.Loan.create(req.body).then(function() {
+router.post('/loans/new', (req, res, next) => {
+  models.Loan.create(req.body).then(() => {
     res.redirect('/loans');
   }).catch((errors) => {
     if (errors.name === "SequelizeValidationError") {
@@ -368,8 +386,9 @@ router.post('/loans/new', function(req, res, next) {
           'library_id'
         ]
       });
-      Promise.all([books,patrons]).then(function(querys) {
-          errors = createFieldList(errors);
+      // if there's a validation error creating a loan, you have to get a list of books and patrons again
+      Promise.all([books,patrons]).then((querys) => {
+          errors = errorList.create(errors);
           res.render('newloan', {title: "New Loan",books: querys[0], patrons: querys[1], errors, data: res.req.body});
       });
     } else {
@@ -400,7 +419,7 @@ router.get('/loans/return/:loanid',(req,res,next) => {
           ]
         }
       ]
-  }).then(function(loan) {
+  }).then((loan) => {
       let today = new Date().toISOString().slice(0,10);
       res.render('returnbook', {loan, title: 'Return Book', today});
   });
@@ -411,7 +430,9 @@ router.put('/loans/return/:loanid',(req,res,next) => {
     where: {
       id: req.params.loanid
     }
-  }).then(function(loan) {
+  }).then((loan) => {
+    // since a loan has an empty returned on date initally (when the book is checked out)
+    // some validation has to be done on the put route instead of the loan model
     if (res.req.body.returned_on === "") {
       let errors = {errors:[{message: 'The Returned on field can not be blank.'}]};
       res.render('returnbook', {title: 'Return Book', errors, data: res.req.body});
@@ -425,7 +446,7 @@ router.put('/loans/return/:loanid',(req,res,next) => {
         res.redirect('/loans');
       }).catch((errors) => {
         if (errors.name === "SequelizeValidationError") {
-          errors = createFieldList(errors);
+          errors = errorList.create(errors);
           res.render('returnbook', {title: "Return Book", errors, data: res.req.body});
         } else {
           throw error;
@@ -435,8 +456,9 @@ router.put('/loans/return/:loanid',(req,res,next) => {
   });
 });
 
-router.post('/search', function(req, res, next) {
+router.post('/search', (req, res, next) => {
   if (req.query.type === "book") {
+    // format search term
     let searchTerm = '%' + req.body.query + '%';
     models.Book.findAll({
       where: {
@@ -460,8 +482,10 @@ router.post('/search', function(req, res, next) {
       }
     }).then((books) => {
        if (books.length === 0) {
+         // if no results
          res.render('search', {title: "Search Results", books, results: "false"});
        } else {
+         // if results
         res.render('search', {title: "Search Results", books});
        }
     }).catch((error) => {
@@ -515,20 +539,8 @@ router.post('/search', function(req, res, next) {
       });
   }
 });  
-  // }
-  // models.Book.create(req.body).then(function() {
-  //   res.redirect('/books');
-  // }).catch((errors) => {
-  //   if (errors.name === "SequelizeValidationError") {
-  //     errors = createFieldList(errors);
-  //     res.render('newbook', {title: "New Book", errors, data: res.req.body});
-  //   } else {
-  //     throw error;
-  //   }
-  // }); 
-// });
 
-const createFieldList = (errors) => {
+const create = (errors) => {
   let errorArray = errors.errors;
   errors.fieldList = {};
   errorArray.forEach((value) => {
@@ -539,13 +551,3 @@ const createFieldList = (errors) => {
 }
 
 module.exports = router;
-
-// use the build method
-// use the create method to add rows to the database then redirect
-// use findById to find something by the id field
-// findAll({options}) order: [['column to order by','desc'],['second column to order by','ASC']]
-// use the update method to update existing rows
-// use the destroy method to delete rows
-// model.findBy.then function(model) {return model.method}.then redirect.catch(function(error){log error})
-// model.findBy.then function(model) {if model do stuff else error code}
-// before .catch .catch(error) {if (error.name === "SequelizeValidationError") {rerender page with error message error.errors} else {throw error}}

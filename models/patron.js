@@ -1,6 +1,6 @@
 'use strict';
-module.exports = function(sequelize, DataTypes) {
-  var Patron = sequelize.define('Patron', {
+module.exports = (sequelize, DataTypes) => {
+  const Patron = sequelize.define('Patron', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true
@@ -104,11 +104,6 @@ module.exports = function(sequelize, DataTypes) {
     underscored: true
   },
   {
-    classMethods: {
-      associate: function(models) {
-        
-      }
-    }
   });
   return Patron;
 };

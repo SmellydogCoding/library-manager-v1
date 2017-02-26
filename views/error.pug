@@ -1,6 +1,13 @@
-extends layout
-
-block content
-  h1= message
-  h2= error.status
-  pre #{error.stack}
+include ./partials/_head.pug
+include ./partials/_nav.pug
+body
+  div.centered
+    if status == "404"
+      h1 #{status}
+      img(src="../img/book.svg")
+      h2 I'm sorry, but that page does not exist.  Please click the back button and try again.
+    else
+      h1 #{status}
+      img(src="../img/book.svg")
+      h2 I'm sorry, it looks like something has gone wrong.  Please wait a few minutes and try again.  If the problem persists, please give the following geekspeak to the website maintainer:
+      p.left #{stack}

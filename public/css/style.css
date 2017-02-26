@@ -93,7 +93,7 @@ input[type=text], select {
   margin-left: 10px;
 }
 
-/*form validation*/
+/* form validation */
 
 .error {
   font-size: 1.05em;
@@ -107,7 +107,7 @@ input[type=text], select {
    border: 1px solid red;
 }
 
-/*pagination*/
+/* pagination */
 
 .pagination td {
   background-color: #fff;
@@ -128,7 +128,7 @@ input[type=text], select {
   color: #fff;
 }
 
-/*search*/
+/* search */
 
 .filters,.search {
   display: inline-block;
@@ -147,9 +147,16 @@ input[type=text], select {
   margin-left: 0.25em !important;
 }
 
-/*helper*/
+/* helper */
 
 .hidden {
   display: none;
 }
 
+.centered {
+  text-align: center;
+}
+
+.left {
+  text-align: left;
+}

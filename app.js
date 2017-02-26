@@ -1,53 +1,51 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var methodOverride = require('method-override');
+'use strict';
+
+const express = require('express');
+const path = require('path');
+const logger = require('morgan');
+const bodyParser = require('body-parser');
+const methodOverride = require('method-override');
 
 // Express App
-var app = express();
+const app = express();
 
-// send forms to put or delete routes
+// enable method=DELETE and method=PUT in HTML forms
 app.use(methodOverride('_method'));
 
 // Body Parser (must be called before routes)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-var index = require('./routes/index');
-// var users = require('./routes/users');
+// get routes file
+const index = require('./routes/index');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+// morgan logger
 app.use(logger('dev'));
-app.use(cookieParser());
+
+// static files
 app.use(express.static(path.join(__dirname, 'public')));
 
+// use routes file for routine
 app.use('/', index);
-// app.use('/users', users);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+app.use((req, res, next) => {
+  let error = new Error('Not Found');
+  error.status = 404;
+  next(error);
 });
 
 // error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+app.use(function(error, req, res, next) {
+  res.status(error.status || 500);
+  let message = error.message;
+  let status = res.statusCode;
+  let stack = error.stack;
+  res.render('error', {message, status, stack});
 });
 
 module.exports = app;
