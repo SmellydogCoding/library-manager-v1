@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const models = require('../models');
-const errorList = require('../errorList.js')
+const listCompiler = require('../ListCompiler.js')
 
 // Relationships
 models.Loan.belongsTo(models.Book);
@@ -78,8 +78,7 @@ router.post('/books/new', (req, res, next) => {
     res.redirect('/books');
   }).catch((errors) => {
     if (errors.name === "SequelizeValidationError") {
-      console.log(errorList.create);
-      errors = errorList.create(errors);
+      errors = listCompiler.create(errors);
       res.render('newbook', {title: "New Book", errors, data: res.req.body});
     } else {
       throw error;
@@ -149,7 +148,7 @@ router.put('/books/update', (req, res, next) => {
         // if there's a validation error updating a book, you have to query that book again
         // to get the related loan history
         Promise.all([book]).then((book) => {
-          errors = errorList.create(errors);
+          errors = listCompiler.create(errors);
         res.render('bookdetail', {title: book[0].title, errors, book: book[0], data: res.req.body});
         });
       } else {
@@ -176,7 +175,7 @@ router.post('/patrons/new', (req, res, next) => {
     res.redirect('/patrons');
   }).catch((errors) => {
     if (errors.name === "SequelizeValidationError") {
-      errors = errorList.create(errors);
+      errors = listCompiler.create(errors);
       res.render('newpatron', {title: "New Patron", errors, data: res.req.body});
     } else {
       throw error;
@@ -244,7 +243,7 @@ router.put('/patrons/update', (req, res, next) => {
         // if there's a validation error updating a patron, you have to query that patron again
         // to get the related loan history
         Promise.all([patron]).then((patron) => {
-          errors = errorList.create(errors);
+          errors = listCompiler.create(errors);
         res.render('patrondetail', {title: patron[0].first_name + " " + patron[0].last_name, errors, patron: patron[0], data: res.req.body});
         });
       } else {
@@ -345,6 +344,14 @@ router.get('/loans/new', (req, res, next) => {
     attributes: [
       'id',
       'title'
+    ],
+    include: [
+      {
+        model: models.Loan,
+        attributes: [
+          "returned_on"
+        ]
+      }
     ]
   });
   let patrons = models.Patron.findAll({
@@ -363,7 +370,8 @@ router.get('/loans/new', (req, res, next) => {
     // and add 7 days and convert it to the yyyy-mm-dd format
     let nextWeek = date.setDate(date.getDate() + 7);
     nextWeek = new Date(nextWeek).toISOString().slice(0,10);
-    res.render('newloan', {books: querys[0], patrons: querys[1], today, nextWeek, title: "New Loan"});
+    const booksInTheLibrary = listCompiler.filterCheckedOutBooks(querys[0]);
+    res.render('newloan', {books: booksInTheLibrary, patrons: querys[1], today, nextWeek, title: "New Loan"});
   });
 });
 
@@ -376,6 +384,14 @@ router.post('/loans/new', (req, res, next) => {
         attributes: [
           'id',
           'title'
+        ],
+        include: [
+          {
+            model: models.Loan,
+            attributes: [
+              "returned_on"
+            ]
+          }
         ]
       });
       let patrons = models.Patron.findAll({
@@ -388,8 +404,9 @@ router.post('/loans/new', (req, res, next) => {
       });
       // if there's a validation error creating a loan, you have to get a list of books and patrons again
       Promise.all([books,patrons]).then((querys) => {
-          errors = errorList.create(errors);
-          res.render('newloan', {title: "New Loan",books: querys[0], patrons: querys[1], errors, data: res.req.body});
+          const booksInTheLibrary = listCompiler.filterCheckedOutBooks(querys[0]);
+          errors = listCompiler.create(errors);
+          res.render('newloan', {title: "New Loan",books: booksInTheLibrary, patrons: querys[1], errors, data: res.req.body});
       });
     } else {
       throw error;
@@ -446,7 +463,7 @@ router.put('/loans/return/:loanid',(req,res,next) => {
         res.redirect('/loans');
       }).catch((errors) => {
         if (errors.name === "SequelizeValidationError") {
-          errors = errorList.create(errors);
+          errors = listCompiler.create(errors);
           res.render('returnbook', {title: "Return Book", errors, data: res.req.body});
         } else {
           throw error;
