@@ -91,9 +91,9 @@ module.exports = (sequelize, DataTypes) => {
         validZip: (value) => {
           const zipValidation = /^[0-9]{5}$/;
           if (value === "") {
-            throw new Error('The Zip Code field can not be blank.')
+            throw new Error('The Zip Code field can not be blank.');
           } else if (!zipValidation.test(value)) {
-            throw new Error('That is not a valid zip code.  Zip code must be 5 digits, numbers only.')
+            throw new Error('That is not a valid zip code.  Zip code must be 5 digits, numbers only.');
           }
         }
       }

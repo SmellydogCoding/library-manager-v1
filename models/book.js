@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
           const zipValidation = /^[0-9]{4}$/;
           if (value !== "") {
             if (!zipValidation.test(value)) {
-              throw new Error('The First Published field must be 4 digits.  This field may be left blank if desired.')
+              throw new Error('The First Published field must be 4 digits.  This field may be left blank if desired.');
             }
           }
         }

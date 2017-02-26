@@ -31,9 +31,9 @@ module.exports = (sequelize, DataTypes) => {
           } else {
             const dateValidation = /^[2][0][1-2][0-9][-][0-1][0-9][-][0-3][0-9]$/;
             if (!dateValidation.test(value)) {
-              throw new Error('That is not a valid date.  Dates must be in this format: yyyy-mm-dd.  Year must be between 2010 and 2029.  Month must be between 0 and 12.')
+              throw new Error('That is not a valid date.  Dates must be in this format: yyyy-mm-dd.  Year must be between 2010 and 2029.  Month must be between 0 and 12.');
             } else if (parseInt(value[8] + value[9]) > 31) {
-              throw new Error('That is not a valid date.  A month can not have more than 31 days.')
+              throw new Error('That is not a valid date.  A month can not have more than 31 days.');
             }
           }
         }
@@ -48,11 +48,11 @@ module.exports = (sequelize, DataTypes) => {
           } else {
             const dateValidation = /^[2][0][1-2][0-9][-][0-1][0-9][-][0-3][0-9]$/;
             if (!dateValidation.test(value)) {
-              throw new Error('That is not a valid date.  Dates must be in this format: yyyy-mm-dd.  Year must be between 2010 and 2029.  Month must be between 0 and 12.')
+              throw new Error('That is not a valid date.  Dates must be in this format: yyyy-mm-dd.  Year must be between 2010 and 2029.  Month must be between 0 and 12.');
             } else if (parseInt(value[8] + value[9]) > 31) {
-              throw new Error('That is not a valid date.  A month can not have more than 31 days.')
+              throw new Error('That is not a valid date.  A month can not have more than 31 days.');
             } else if (new Date(value) <= new Date()) {
-              throw new Error ('That is not a valid date.  The Return by date must be after today.')
+              throw new Error ('That is not a valid date.  The Return by date must be after today.');
             }
           }
         }
@@ -65,9 +65,9 @@ module.exports = (sequelize, DataTypes) => {
           if (value !== "") {
             const dateValidation = /^[2][0][1-2][0-9][-][0-1][0-9][-][0-3][0-9]$/;
             if (!dateValidation.test(value)) {
-              throw new Error('That is not a valid date.  Dates must be in this format: yyyy-mm-dd.  Year must be between 2010 and 2029.  Month must be between 0 and 12.')
+              throw new Error('That is not a valid date.  Dates must be in this format: yyyy-mm-dd.  Year must be between 2010 and 2029.  Month must be between 0 and 12.');
             } else if (parseInt(value[8] + value[9]) > 31) {
-              throw new Error('That is not a valid date.  A month can not have more than 31 days.')
+              throw new Error('That is not a valid date.  A month can not have more than 31 days.');
             }
           }
         }

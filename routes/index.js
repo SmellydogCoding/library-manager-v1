@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const models = require('../models');
-const listCompiler = require('../ListCompiler.js')
+const listCompiler = require('../ListCompiler.js');
 
 // Relationships
 models.Loan.belongsTo(models.Book);
@@ -556,15 +556,5 @@ router.post('/search', (req, res, next) => {
       });
   }
 });  
-
-const create = (errors) => {
-  let errorArray = errors.errors;
-  errors.fieldList = {};
-  errorArray.forEach((value) => {
-    let key = value.path;
-    errors.fieldList[key] = key;
-  });
-  return errors
-}
 
 module.exports = router;
