@@ -1,12 +1,12 @@
 'use strict';
 
-const fs        = require('fs');
-const path      = require('path');
-const Sequelize = require('sequelize');
-const basename  = path.basename(module.filename);
-const env       = 'production';
-const configFile    = require('../config/config.js');
-const db        = {};
+const fs         = require('fs');
+const path       = require('path');
+const Sequelize  = require('sequelize');
+const basename   = path.basename(module.filename);
+const env        = 'production';
+const configFile = require('../config/config.js');
+const db         = {};
 
 let config;
 env === 'development' ? config = configFile.development : config = configFile.production;
