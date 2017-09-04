@@ -2,10 +2,10 @@
 const models = require('../models');
 module.exports = (sequelize, DataTypes) => {
   const Loan = sequelize.define('Loan', {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true
-    },
+    // id: {
+    //   type: DataTypes.INTEGER,
+    //   primaryKey: true
+    // },
     book_id: {
       type: DataTypes.INTEGER,
       validate: {

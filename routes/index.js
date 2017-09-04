@@ -409,7 +409,7 @@ router.post('/loans/new', (req, res, next) => {
           res.render('newloan', {title: "New Loan",books: booksInTheLibrary, patrons: querys[1], errors, data: res.req.body});
       });
     } else {
-      throw error;
+      console.log(errors);
     }
   });
 });
